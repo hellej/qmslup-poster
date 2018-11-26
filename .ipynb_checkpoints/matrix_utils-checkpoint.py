@@ -24,7 +24,7 @@ def targets_ykr_ids(grid, targets):
 
     return ykr_ids
 
-def get_travel_times_to_targets(grid, ykr_ids, folder, year):
+def get_travel_times_to_targets(grid, ykr_ids, folder):
     filepaths = []
     for id in ykr_ids:
         subfolder = str(id)[:4]+'xxx/'
@@ -42,7 +42,7 @@ def get_travel_times_to_targets(grid, ykr_ids, folder, year):
     # pt_r_t: public transport rush hour traffic
     t_columns = []
     for idx, tt_df in enumerate(tt_dfs):
-        columnn = year+'pt_r_t_'+str(idx)
+        columnn = 'pt_r_t_'+str(idx)
         tt_df.columns = ['from_id', columnn]
         t_columns.append(columnn)
 
