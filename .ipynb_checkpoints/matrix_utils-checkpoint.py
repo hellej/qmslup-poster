@@ -52,7 +52,7 @@ def get_travel_times_to_targets(grid, ykr_ids, folder):
         ttimes = pd.merge(ttimes, tt_df, how='inner', left_on='YKR_ID', right_on='from_id')
    
     # select only relevant columns from the data
-    columns = ['x', 'y', 'YKR_ID', 'geometry']
+    columns = ['YKR_ID', 'geometry']
     ttimes = ttimes[columns + t_columns]
     
     # replace -1 with No Data
@@ -83,7 +83,10 @@ def add_min_travel_times_to_df(ttimes):
     # float to int
     ttimes['min_t'] = [int(value) for value in ttimes['min_t']]
     
-    return ttimes
+    ykrcolumns = ['YKR_ID', 'geometry']
+    ttcolumns = ['min_t', 'min_idx']
+    
+    return ttimes[ykrcolumns + ttcolumns]
 
 
 def add_population_to_travel_times(ttimes, ykr_pop):
