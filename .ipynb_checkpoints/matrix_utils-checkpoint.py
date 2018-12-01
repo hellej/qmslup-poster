@@ -103,9 +103,10 @@ def calculate_cumulative_pop(ttimes_pop):
     totpop = 0
     for idx, values in grouped:
         times.append(idx)
-        pops.append(values['ASUKKAITA'].sum())
-        totpop = sum(pops) + values['ASUKKAITA'].sum()
-        cumpops.append(totpop)
+        grouppop = values['ASUKKAITA'].sum()
+        cumpop = sum(pops) + grouppop
+        cumpops.append(cumpop)
+        pops.append(grouppop)
 
     cum_pops = gpd.GeoDataFrame(data={'time': times, 'population': pops, 'cumpopulation': cumpops})  
     return cum_pops
