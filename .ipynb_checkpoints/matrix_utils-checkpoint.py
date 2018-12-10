@@ -2,6 +2,7 @@ import glob
 import numpy as np
 import pandas as pd
 import geopandas as gpd
+import matplotlib.pyplot as plt
 
 def targets_ykr_ids(grid, targets):    
     # print column names
@@ -21,8 +22,16 @@ def targets_ykr_ids(grid, targets):
     # get the ids as list
     ykr_ids = targets_ykr.YKR_ID.tolist()
     print('YKR ids:', ykr_ids)
-
-    return ykr_ids
+    
+    timecols = []
+    names = []
+    for idx, target in targets.iterrows():
+        columnn = 'pt_r_t_'+str(idx)
+        # print('target:', target)
+        names.append(target['name'])
+        timecols.append(columnn)
+        
+    return {'ykr_ids': ykr_ids, 'timecols': timecols, 'names': names}
 
 def get_travel_times_to_targets(grid, ykr_ids, folder):
     filepaths = []
@@ -59,7 +68,7 @@ def get_travel_times_to_targets(grid, ykr_ids, folder):
     ttimes = ttimes.replace(-1, np.nan)
     
     return ttimes
-
+    
 def add_min_travel_times_to_df(ttimes):
     # get time column names as list
     timecols = []
@@ -82,12 +91,8 @@ def add_min_travel_times_to_df(ttimes):
     
     # float to int
     ttimes['min_t'] = [int(value) for value in ttimes['min_t']]
-    
-    ykrcolumns = ['YKR_ID', 'geometry']
-    ttcolumns = ['min_t', 'min_idx']
-    
-    return ttimes[ykrcolumns + ttcolumns]
-
+        
+    return ttimes
 
 def add_population_to_travel_times(ttimes, ykr_pop):
     # join population info (from points) to grid cells
@@ -95,8 +100,8 @@ def add_population_to_travel_times(ttimes, ykr_pop):
     return ttimes_pop
 
 
-def calculate_cumulative_pop(ttimes_pop):
-    grouped = ttimes_pop.groupby(['min_t'])
+def calculate_cumulative_pop(ttimes_pop, timecol):
+    grouped = ttimes_pop.groupby([timecol])
     times = []
     pops = []
     cumpops = []
@@ -110,3 +115,42 @@ def calculate_cumulative_pop(ttimes_pop):
 
     cum_pops = gpd.GeoDataFrame(data={'time': times, 'population': pops, 'cumpopulation': cumpops})  
     return cum_pops
+
+def plot_cum_pops(cum_pops_15, cum_pops_18, idx, target_info):
+    # prepare fig & ax for plotting
+    fig, ax = plt.subplots(figsize=(12,7))
+
+    # plot data
+    ax.plot(cum_pops_18['time'], cum_pops_18['cumpopulation'], c='red', label='2018')
+    ax.plot(cum_pops_15['time'], cum_pops_15['cumpopulation'], c='black', label='2015')
+
+    # set labels
+    targetname = target_info['names'][idx]
+    ax.set(xlabel='Travel time (PT)', ylabel='Population reached')
+    ax.set_title(target_info['names'][idx], fontsize=16)
+
+    # set axis & ticks
+    ax.set_xlim([0,71])
+    ax.grid()
+    # ticks every 10
+    x_ticks = np.arange(0, 71, 10)
+    #y_ticks = np.arange(0, 1110000, 100000)
+    ax.set_xticks(x_ticks)
+    #ax.set_yticks(y_ticks)
+
+    # set font size
+    plt.rcParams.update({'font.size': 12})
+    ax.xaxis.label.set_size(14)
+    ax.yaxis.label.set_size(14)
+
+    # add legend
+    ax.legend()
+    
+    filename = 'cum_pop_'+ str(idx) +'_'+ targetname
+
+    # save plot
+    fig.savefig('plots/'+filename, dpi=130)
+    # fig.savefig('plots/pop_curve_test.eps', format='eps', dpi=1000)
+
+    # show plot
+    plt.show()
