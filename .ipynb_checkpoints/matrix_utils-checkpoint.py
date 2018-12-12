@@ -119,17 +119,17 @@ def calculate_cumulative_pop(ttimes_pop, timecol):
 
 def plot_cum_pops(cum_pops_15, cum_pops_18, target_name):
     # prepare fig & ax for plotting
-    mpl.rcParams['axes.linewidth'] = 2.5
+    mpl.rcParams['axes.linewidth'] = 3
 
     fig, ax = plt.subplots(figsize=(12,7))
 
     # plot data
-    ax.plot(cum_pops_18['time'], cum_pops_18['cumpopulation'], linewidth=2.5, c='red', label='2018')
-    ax.plot(cum_pops_15['time'], cum_pops_15['cumpopulation'], linewidth=2.5, c='blue', label='2015')
+    ax.plot(cum_pops_18['time'], cum_pops_18['cumpopulation'], linewidth=3, c='red', label='2018')
+    ax.plot(cum_pops_15['time'], cum_pops_15['cumpopulation'], linewidth=3, c='blue', label='2015')
 
     # set labels
     ax.set(xlabel='Travel time (rush hour PT, min)', ylabel='Population reached')
-    ax.set_title(target_name, fontsize=26)
+    ax.set_title(target_name, fontsize=44)
     
     # set axis & ticks
     ax.set_xlim([0,71])
@@ -137,30 +137,30 @@ def plot_cum_pops(cum_pops_15, cum_pops_18, target_name):
     # x ticks every 10 min
     x_ticks = np.arange(0, 71, 10)
     ax.set_xticks(x_ticks)
-    ax.set_xticklabels(x_ticks, fontsize=19)
+    ax.set_xticklabels(x_ticks, fontsize=26)
     y_ticks = np.arange(0, 1110000, 100000)
-    print('len y_ticks',  len(y_ticks))
-    print(y_ticks)
     ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_ticks, fontsize=19)
+    ax.set_yticklabels(y_ticks, fontsize=23)
     
-    ax.xaxis.set_tick_params(width=2.5)
-    ax.yaxis.set_tick_params(width=2.5)
+    ax.xaxis.set_tick_params(width=3)
+    ax.yaxis.set_tick_params(width=3)
 
     # set font size
     # plt.rcParams.update({'font.size': 19})
-    ax.xaxis.label.set_size(22)
-    ax.yaxis.label.set_size(22)
+    ax.xaxis.label.set_size(34)
+    ax.yaxis.label.set_size(34)
 
     # add legend
-    ax.legend(fontsize=19)
+    ax.legend(fontsize=36)
     
     filename = 'cum_pop_'+ target_name
-
-    # save plot
-    fig.savefig('plots/'+filename, dpi=130)
-    # fig.savefig('plots/pop_curve_test.eps', format='eps', dpi=1000)
-
+    
     # show plot
     plt.show()
+    
+    # save plot
+    fig.savefig('plots/'+filename, dpi=130, bbox_inches='tight')
+    # fig.savefig('plots/pop_curve_test.eps', format='eps', dpi=1000)
+
+
     
