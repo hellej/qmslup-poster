@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 def targets_ykr_ids(grid, targets):    
     # print column names
@@ -116,37 +117,45 @@ def calculate_cumulative_pop(ttimes_pop, timecol):
     cum_pops = gpd.GeoDataFrame(data={'time': times, 'population': pops, 'cumpopulation': cumpops})  
     return cum_pops
 
-def plot_cum_pops(cum_pops_15, cum_pops_18, idx, target_info):
+def plot_cum_pops(cum_pops_15, cum_pops_18, target_name):
     # prepare fig & ax for plotting
+    mpl.rcParams['axes.linewidth'] = 2.5
+
     fig, ax = plt.subplots(figsize=(12,7))
 
     # plot data
-    ax.plot(cum_pops_18['time'], cum_pops_18['cumpopulation'], c='red', label='2018')
-    ax.plot(cum_pops_15['time'], cum_pops_15['cumpopulation'], c='black', label='2015')
+    ax.plot(cum_pops_18['time'], cum_pops_18['cumpopulation'], linewidth=2.5, c='red', label='2018')
+    ax.plot(cum_pops_15['time'], cum_pops_15['cumpopulation'], linewidth=2.5, c='blue', label='2015')
 
     # set labels
-    targetname = target_info['names'][idx]
-    ax.set(xlabel='Travel time (PT)', ylabel='Population reached')
-    ax.set_title(target_info['names'][idx], fontsize=16)
-
+    ax.set(xlabel='Travel time (rush hour PT, min)', ylabel='Population reached')
+    ax.set_title(target_name, fontsize=26)
+    
     # set axis & ticks
     ax.set_xlim([0,71])
     ax.grid()
-    # ticks every 10
+    # x ticks every 10 min
     x_ticks = np.arange(0, 71, 10)
-    #y_ticks = np.arange(0, 1110000, 100000)
     ax.set_xticks(x_ticks)
-    #ax.set_yticks(y_ticks)
+    ax.set_xticklabels(x_ticks, fontsize=19)
+    y_ticks = np.arange(0, 1110000, 100000)
+    print('len y_ticks',  len(y_ticks))
+    print(y_ticks)
+    ax.set_yticks(y_ticks)
+    ax.set_yticklabels(y_ticks, fontsize=19)
+    
+    ax.xaxis.set_tick_params(width=2.5)
+    ax.yaxis.set_tick_params(width=2.5)
 
     # set font size
-    plt.rcParams.update({'font.size': 12})
-    ax.xaxis.label.set_size(14)
-    ax.yaxis.label.set_size(14)
+    # plt.rcParams.update({'font.size': 19})
+    ax.xaxis.label.set_size(22)
+    ax.yaxis.label.set_size(22)
 
     # add legend
-    ax.legend()
+    ax.legend(fontsize=19)
     
-    filename = 'cum_pop_'+ str(idx) +'_'+ targetname
+    filename = 'cum_pop_'+ target_name
 
     # save plot
     fig.savefig('plots/'+filename, dpi=130)
@@ -154,3 +163,4 @@ def plot_cum_pops(cum_pops_15, cum_pops_18, idx, target_info):
 
     # show plot
     plt.show()
+    
